@@ -1,0 +1,7 @@
+Suggested Approach for You (Student + Patent Attempt)
+
+Feature Extraction → Fourier Transform + Speed/Altitude profiling.
+
+Classification → Random Forest (for simplicity) or CNN (if radar spectrogram dataset available).
+
+Risk Scoring → Rule-based + extendable ML-based system.

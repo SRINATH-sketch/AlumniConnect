@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni Network System - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1200px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            padding: 8px 20px;
+            border: 2px solid white;
+            border-radius: 20px;
+            background: transparent;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .role-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .role-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .role-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .role-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .role-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .content {
+            padding: 30px;
+            min-height: 400px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-title {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .navigation {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .nav-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .nav-card p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .badge-student { background: #4CAF50; color: white; }
+        .badge-alumni { background: #2196F3; color: white; }
+        .badge-pending { background: #FF9800; color: white; }
+        .badge-approved { background: #4CAF50; color: white; }
+
+        .chat-message {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .chat-message.sent {
+            background: #667eea;
+            color: white;
+            margin-left: 50px;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .chat-input input {
+            flex: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Alumni Network System</h1>
+            <p>Connecting Students, Alumni, and Administrators</p>
+            <div class="user-info">
+                <span class="user-name" id="userName">Demo User</span>
+                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="role-selector" id="roleSelector">
+            <button class="role-btn" onclick="showRole('student')" id="studentBtn">👨‍🎓 Student Portal</button>
+            <button class="role-btn" onclick="showRole('alumni')" id="alumniBtn">🎯 Alumni Portal</button>
+            <button class="role-btn" onclick="showRole('admin')" id="adminBtn">⚙ Admin Panel</button>
+        </div>
+
+        <div class="content" id="mainContent">
+            <!-- Student Pages -->
+            <div id="student" class="page">
+                <h2 class="page-title">👨‍🎓 Student Portal</h2>
+                <div class="navigation">
+                    <div class="nav-card" onclick="showPage('register')">
+                        <h3>📝 Register</h3>
+                        <p>Create your student account</p>
+                    </div>
+                    <div class="nav-card" onclick="showPage('alumni_directory')">
+                        <h3>👥 Alumni Directory</h3>
+                        <p>Connect with alumni</p>
+                    </div>
+                    <div class="nav-card" onclick="showPage('student_chat')">
+                        <h3>💬 Chat</h3>
+                        <p>Message alumni and peers</p>
+                    </div>
+                    <div class="nav-card" onclick="showPage('student_events')">
+                        <h3>📅 Events</h3>
+                        <p>View upcoming events</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Register Page -->
+            <div id="register" class="page">
+                <h2 class="page-title">📝 Student Registration</h2>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Student ID</label>
+                    <input type="text" placeholder="Enter your student ID">
+                </div>
+                <div class="form-group">
+                    <label>Department</label>
+                    <select>
+                        <option>Computer Science</option>
+                        <option>Engineering</option>
+                        <option>Business</option>
+                        <option>Arts</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Year</label>
+                    <select>
+                        <option>1st Year</option>
+                        <option>2nd Year</option>
+                        <option>3rd Year</option>
+                        <option>4th Year</option>
+                    </select>
+                </div>
+                <button class="btn">Register</button>
+                <button class="btn" onclick="showRole('student')" style="background: #ccc; margin-left: 10px;">Back</button>
+            </div>
+
+            <!-- Alumni Directory -->
+            <div id="alumni_directory" class="page">
+                <h2 class="page-title">👥 Alumni Directory</h2>
+                <div class="form-group">
+                    <input type="text" placeholder="Search alumni by name, company, or skills...">
+                </div>
+                <div class="card">
+                    <h4>Sarah Johnson <span class="badge badge-alumni">Class of 2018</span></h4>
+                    <p><strong>Company:</strong> Google</p>
+                    <p><strong>Position:</strong> Senior Software Engineer</p>
+                    <p><strong>Skills:</strong> Python, Machine Learning, Cloud Computing</p>
+                    <button class="btn" style="margin-top: 10px;">Connect</button>
+                </div>
+                <div class="card">
+                    <h4>Michael Chen <span class="badge badge-alumni">Class of 2020</span></h4>
+                    <p><strong>Company:</strong> Microsoft</p>
+                    <p><strong>Position:</strong> Product Manager</p>
+                    <p><strong>Skills:</strong> Product Strategy, Agile, UX Design</p>
+                    <button class="btn" style="margin-top: 10px;">Connect</button>
+                </div>
+                <div class="card">
+                    <h4>Emily Rodriguez <span class="badge badge-alumni">Class of 2019</span></h4>
+                    <p><strong>Company:</strong> Amazon</p>
+                    <p><strong>Position:</strong> Data Scientist</p>
+                    <p><strong>Skills:</strong> Data Analysis, R, Statistics</p>
+                    <button class="btn" style="margin-top: 10px;">Connect</button>
+                </div>
+                <button class="btn" onclick="showRole('student')">Back to Portal</button>
+            </div>
+
+            <!-- Student Chat -->
+            <div id="student_chat" class="page">
+                <h2 class="page-title">💬 Chat</h2>
+                <div class="chat-message">
+                    <strong>Sarah Johnson:</strong> Hi! Happy to help with your career questions.
+                </div>
+                <div class="chat-message sent">
+                    <strong>You:</strong> Thanks! I'm interested in machine learning roles.
+                </div>
+                <div class="chat-message">
+                    <strong>Sarah Johnson:</strong> Great choice! Let me share some resources with you.
+                </div>
+                <div class="chat-input">
+                    <input type="text" placeholder="Type your message...">
+                    <button class="btn">Send</button>
+                </div>
+                <button class="btn" onclick="showRole('student')" style="margin-top: 20px;">Back to Portal</button>
+            </div>
+
+            <!-- Student Events -->
+            <div id="student_events" class="page">
+                <h2 class="page-title">📅 Events</h2>
+                <div class="card">
+                    <h4>Tech Career Fair 2025</h4>
+                    <p><strong>Date:</strong> November 15, 2025</p>
+                    <p><strong>Location:</strong> Main Campus Hall</p>
+                    <p><strong>Description:</strong> Meet recruiters from top tech companies</p>
+                    <button class="btn" style="margin-top: 10px;">Register</button>
+                </div>
+                <div class="card">
+                    <h4>Alumni Networking Night</h4>
+                    <p><strong>Date:</strong> November 22, 2025</p>
+                    <p><strong>Location:</strong> Virtual Event</p>
+                    <p><strong>Description:</strong> Connect with alumni in your field</p>
+                    <button class="btn" style="margin-top: 10px;">Register</button>
+                </div>
+                <div class="card">
+                    <h4>Workshop: Resume Building</h4>
+                    <p><strong>Date:</strong> December 5, 2025</p>
+                    <p><strong>Location:</strong> Career Center</p>
+                    <p><strong>Description:</strong> Learn to create a standout resume</p>
+                    <button class="btn" style="margin-top: 10px;">Register</button>
+                </div>
+                <button class="btn" onclick="showRole('student')">Back to Portal</button>
+            </div>
+
+            <!-- Alumni Pages -->
+            <div id="alumni" class="page">
+                <h2 class="page-title">🎯 Alumni Portal</h2>
+                <div class="navigation">
+                    <div class="nav-card" onclick="showPage('student_requests')">
+                        <h3>📨 Student Requests</h3>
+                        <p>View connection requests</p>
+                    </div>
+                    <div class="nav-card" onclick="showPage('alumni_chat')">
+                        <h3>💬 Chat</h3>
+                        <p>Message students</p>
+                    </div>
+                    <div class="nav-card" onclick="showPage('alumni_events')">
+                        <h3>📅 Events</h3>
+                        <p>View and create events</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Requests -->
+            <div id="student_requests" class="page">
+                <h2 class="page-title">📨 Student Connection Requests</h2>
+                <div class="card">
+                    <h4>John Smith <span class="badge badge-student">3rd Year CS</span></h4>
+                    <p><strong>Message:</strong> Hi! I'm interested in learning about your career path at Google.</p>
+                    <button class="btn">Accept</button>
+                    <button class="btn" style="background: #ccc; margin-left: 10px;">Decline</button>
+                </div>
+                <div class="card">
+                    <h4>Emma Davis <span class="badge badge-student">4th Year Engineering</span></h4>
+                    <p><strong>Message:</strong> Would love to discuss internship opportunities in ML.</p>
+                    <button class="btn">Accept</button>
+                    <button class="btn" style="background: #ccc; margin-left: 10px;">Decline</button>
+                </div>
+                <button class="btn" onclick="showRole('alumni')">Back to Portal</button>
+            </div>
+
+            <!-- Alumni Chat -->
+            <div id="alumni_chat" class="page">
+                <h2 class="page-title">💬 Messages</h2>
+                <div class="chat-message">
+                    <strong>John Smith:</strong> Thank you for accepting my request!
+                </div>
+                <div class="chat-message sent">
+                    <strong>You:</strong> You're welcome! Feel free to ask any questions.
+                </div>
+                <div class="chat-input">
+                    <input type="text" placeholder="Type your message...">
+                    <button class="btn">Send</button>
+                </div>
+                <button class="btn" onclick="showRole('alumni')" style="margin-top: 20px;">Back to Portal</button>
+            </div>
+
+            <!-- Alumni Events -->
+            <div id="alumni_events" class="page">
+                <h2 class="page-title">📅 Events</h2>
+                <button class="btn" style="margin-bottom: 20px;">Create New Event</button>
+                <div class="card">
+                    <h4>Tech Career Fair 2025</h4>
+                    <p><strong>Date:</strong> November 15, 2025</p>
+                    <p><strong>Your Role:</strong> Volunteer Recruiter</p>
+                    <p><strong>Status:</strong> <span class="badge badge-approved">Confirmed</span></p>
+                </div>
+                <div class="card">
+                    <h4>Alumni Networking Night</h4>
+                    <p><strong>Date:</strong> November 22, 2025</p>
+                    <p><strong>Your Role:</strong> Speaker</p>
+                    <p><strong>Status:</strong> <span class="badge badge-approved">Confirmed</span></p>
+                </div>
+                <button class="btn" onclick="showRole('alumni')">Back to Portal</button>
+            </div>
+
+            <!-- Admin Pages -->
+            <div id="admin" class="page">
+                <h2 class="page-title">⚙ Admin Panel</h2>
+                <div class="navigation">
+                    <div class="nav-card" onclick="showPage('manage_users')">
+                        <h3>👥 Manage Users</h3>
+                        <p>View and manage all users</p>
+                    </div>
+                    <div class="nav-card" onclick="showPage('view_feedback')">
+                        <h3>📝 View Feedback</h3>
+                        <p>Review user feedback</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Users -->
+            <div id="manage_users" class="page">
+                <h2 class="page-title">👥 Manage Users</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John Smith</td>
+                            <td><span class="badge badge-student">Student</span></td>
+                            <td>john.smith@university.edu</td>
+                            <td><span class="badge badge-approved">Active</span></td>
+                            <td><button class="btn" style="padding: 8px 16px; font-size: 14px;">Edit</button></td>
+                        </tr>
+                        <tr>
+                            <td>Sarah Johnson</td>
+                            <td><span class="badge badge-alumni">Alumni</span></td>
+                            <td>sarah.j@gmail.com</td>
+                            <td><span class="badge badge-approved">Active</span></td>
+                            <td><button class="btn" style="padding: 8px 16px; font-size: 14px;">Edit</button></td>
+                        </tr>
+                        <tr>
+                            <td>Emma Davis</td>
+                            <td><span class="badge badge-student">Student</span></td>
+                            <td>emma.davis@university.edu</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                            <td><button class="btn" style="padding: 8px 16px; font-size: 14px;">Approve</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="btn" onclick="showRole('admin')" style="margin-top: 20px;">Back to Panel</button>
+            </div>
+
+            <!-- View Feedback -->
+            <div id="view_feedback" class="page">
+                <h2 class="page-title">📝 User Feedback</h2>
+                <div class="card">
+                    <h4>John Smith <span class="badge badge-student">Student</span></h4>
+                    <p><strong>Date:</strong> October 20, 2025</p>
+                    <p><strong>Rating:</strong> ⭐⭐⭐⭐⭐</p>
+                    <p><strong>Feedback:</strong> Great platform! Connected with amazing alumni who helped me with career guidance.</p>
+                </div>
+                <div class="card">
+                    <h4>Sarah Johnson <span class="badge badge-alumni">Alumni</span></h4>
+                    <p><strong>Date:</strong> October 18, 2025</p>
+                    <p><strong>Rating:</strong> ⭐⭐⭐⭐</p>
+                    <p><strong>Feedback:</strong> Love giving back to students. Would be nice to have video call integration.</p>
+                </div>
+                <div class="card">
+                    <h4>Michael Chen <span class="badge badge-alumni">Alumni</span></h4>
+                    <p><strong>Date:</strong> October 15, 2025</p>
+                    <p><strong>Rating:</strong> ⭐⭐⭐⭐⭐</p>
+                    <p><strong>Feedback:</strong> Excellent way to stay connected with the university community!</p>
+                </div>
+                <button class="btn" onclick="showRole('admin')">Back to Panel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Page navigation functions
+        let currentRole = 'student';
+
+        window.showRole = function(role) {
+            currentRole = role;
+            
+            // Update button states
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to the clicked button
+            const btnId = role + 'Btn';
+            const activeBtn = document.getElementById(btnId);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show selected role page
+            const rolePage = document.getElementById(role);
+            if (rolePage) {
+                rolePage.classList.add('active');
+            }
+        };
+
+        window.showPage = function(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show selected page
+            const selectedPage = document.getElementById(pageId);
+            if (selectedPage) {
+                selectedPage.classList.add('active');
+            }
+        };
+
+        window.handleLogout = function() {
+            alert('Logout functionality would redirect to login page');
+            // In production: window.location.href = "login.html";
+        };
+
+        // Initialize with student portal on load
+        document.addEventListener('DOMContentLoaded', () => {
+            showRole('student');
+        });
+    </script>
+</body>
+</html>

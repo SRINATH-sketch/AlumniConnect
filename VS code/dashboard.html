@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Alumni Dashboard</title>
+</head>
+<body>
+  <h1>Welcome, <span id="user-name"></span></h1>
+  <p>Batch: <span id="user-batch"></span></p>
+  <p>Email: <span id="user-email"></span></p>
+
+  <script type="module">
+    import { auth, db } from './firebaseConfig.js';
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const docRef = doc(db, "alumni", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          document.getElementById('user-name').innerText = data.name;
+          document.getElementById('user-batch').innerText = data.batch;
+          document.getElementById('user-email').innerText = data.email;
+        }
+      } else {
+        window.location.href = 'extent.html';  // Redirect to signup if not logged in
+      }
+    });
+  </script>
+</body>
+</html>

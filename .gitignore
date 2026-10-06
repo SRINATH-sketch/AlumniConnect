@@ -1,0 +1,17 @@
+# Downloaded web files
+*.download
+
+# Temporary files
+*.tmp
+*.temp
+
+# Windows files
+Thumbs.db
+Desktop.ini
+
+# VS Code
+.vscode/
+
+# Python cache
+__pycache__/
+*.pyc
